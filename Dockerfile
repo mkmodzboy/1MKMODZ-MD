@@ -1,17 +1,22 @@
-FROM node:20-bookworm
+FROM node:20-slim
 
-RUN apt-get update && \
-    apt-get install -y \
+# Media aur build dependencies
+RUN apt-get update && apt-get install -y \
     ffmpeg \
     imagemagick \
-    webp && \
-    rm -rf /var/lib/apt/lists/*
+    webp \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
-COPY package.json .
+COPY package*.json ./
 
-RUN npm install && npm install -g qrcode-terminal pm2
+# Low RAM optimization ke sath install
+RUN npm install --production --legacy-peer-deps
 
 COPY . .
 
